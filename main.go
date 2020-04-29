@@ -56,6 +56,11 @@ func main() {
 // This func will be called every time a new message
 // is created on any channel that bot has access to.
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
+	// Get channel where the message created.
+	c, err := s.State.Channel(m.ChannelID); if err != nil {
+		log.Println("Error getting channel: ", err)
+	}
+
 	// Ignore all messages created by the bot itself.
 	if m.Author.ID == s.State.User.ID {
 		return
@@ -63,11 +68,18 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	// If the message is "ping" reply with "Pong!".
 	if m.Content == "ping" {
-		s.ChannelMessageSend(m.ChannelID, "Pong!")
+		sendMsg(s, c, "Pong!")
 	}
 
 	// If the message is "pong" reply with "Ping!".
 	if m.Content == "pong" {
-		s.ChannelMessageSend(m.ChannelID, "Ping!")
+		sendMsg(s, c, "Ping!")
+	}
+}
+
+func sendMsg(s *discordgo.Session, c *discordgo.Channel, msg string) {
+	log.Println(">>> " + msg)
+	_, err := s.ChannelMessageSend(c.ID, msg); if err != nil {
+		log.Println("Error sending message: ", err)
 	}
 }
