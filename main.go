@@ -66,20 +66,21 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	// If the message is "ping" reply with "Pong!".
-	if m.Content == "ping" {
-		sendMsg(s, c, "Pong!")
-	}
-
-	// If the message is "pong" reply with "Ping!".
-	if m.Content == "pong" {
-		sendMsg(s, c, "Ping!")
-	}
+	sendMsg(s, c, pingpong(m.Content))
 }
 
+// Send message on channel where target message created.
 func sendMsg(s *discordgo.Session, c *discordgo.Channel, msg string) {
 	log.Println(">>> " + msg)
 	_, err := s.ChannelMessageSend(c.ID, msg); if err != nil {
 		log.Println("Error sending message: ", err)
 	}
+}
+
+// Judge "ping" or "pong", then return opposit.
+// else Request message following "ping" or "pong"
+func pingpong(p string) string {
+	if p == "ping" { return "Pong!" }
+	if p == "pong" { return "Ping!" }
+	return "please 'ping' or 'pong'"
 }
